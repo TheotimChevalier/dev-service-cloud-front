@@ -22,21 +22,31 @@ steps:
       - '--image=gcr.io/$PROJECT_ID/cloud-app-front:latest'
       - '--region=europe-west1'
       - '--platform=managed'
-      - '--allow-unauthenticated'
       - '--port=8080'
       - '--memory=256Mi'
       - '--cpu=1'
 
-  # Étape 4: Smoke tests (vérifie que l'app répond)
+  # Étape 4: Configurer l'accès public IAM
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - 'add-iam-policy-binding'
+      - 'cloud-app-front'
+      - '--region=europe-west1'
+      - '--member=allUsers'
+      - '--role=roles/run.invoker'
+
+  # Étape 5: Smoke tests (vérifie que l'app répond)
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'smoke-test'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        URL=$(gcloud run services describe cloud-app-front --region=europe-west1 --format="value(status.url)")
-        echo "Service URL: ${URL}"
-        curl -f --retry 5 --retry-delay 2 "${URL}"
+        URL=$$(gcloud run services describe cloud-app-front --region=europe-west1 --format="value(status.url)")
+        echo "Service URL: $${URL}"
+        curl -f --retry 5 --retry-delay 2 "$${URL}"
 
 images:
   - 'gcr.io/$PROJECT_ID/cloud-app-front:latest'

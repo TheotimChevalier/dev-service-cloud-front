@@ -12,7 +12,8 @@ function App() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/items')
+      const apiUrl = window.location.hostname === 'localhost' ? '/api/items' : `${backendUrl}/items`
+      const response = await fetch(apiUrl)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

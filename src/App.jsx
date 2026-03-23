@@ -45,7 +45,7 @@ function App() {
         </p>
       </div>
       <div className="products-section">
-        <h2>Produits</h2>
+        <h2>Products</h2>
         <button onClick={fetchProducts} disabled={loading}>
           {loading ? 'Chargement...' : 'Actualiser les produits'}
         </button>
